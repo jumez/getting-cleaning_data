@@ -1,43 +1,43 @@
-##merge all the data into 1 database
-##
-##
-##
-##
-##
+##Use these libraries
 library(dplyr)
 library(tidyr)
 
-subjectTest <- read.table("./test/subject_test.txt")
-subjectTrain <- read.table("./train/subject_train.txt")
+##MERGE ALL DATA INTO 1 DATABASE
+##
+##read all different tables and name the columns
+
+subjectTest <- read.table("./test/subject_test.txt", stringsAsFactors = FALSE)
+subjectTrain <- read.table("./train/subject_train.txt", stringsAsFactors = FALSE)
 names(subjectTest) <- "subject"
 names(subjectTrain) <- "subject"
 
-x_Test <- read.table("./test/X_test.txt")
-x_Train <- read.table("./train/X_train.txt")
-nombres <- read.table("./features.txt")
+x_Test <- read.table("./test/X_test.txt", stringsAsFactors = FALSE)
+x_Train <- read.table("./train/X_train.txt", stringsAsFactors = FALSE)
+nombres <- read.table("./features.txt", stringsAsFactors = FALSE)
 names(x_Test) <- nombres[, 2]
 names(x_Train) <- nombres[, 2]
 
-y_Test <- read.table("./test/y_test.txt")
-y_Train <- read.table("./train/y_train.txt")
+y_Test <- read.table("./test/y_test.txt", stringsAsFactors = FALSE)
+y_Train <- read.table("./train/y_train.txt", stringsAsFactors = FALSE)
 names(y_Test) <- "activity"
 names(y_Train) <- "activity"
 
-activity <- read.table("./activity_labels.txt")
+activity <- read.table("./activity_labels.txt", stringsAsFactors = FALSE)
 names(activity) <- "activity"
 
-##test <- cbind(subjectTest, y_Test, x_Test)
-##train <- cbind(subjectTrain, y_Train, x_Train)
+##combine the test and train databases
 
 test <- cbind(subjectTest, "activity" = activity[y_Test[,], 2], x_Test)
 train <- cbind(subjectTrain, "activity" = activity[y_Train[,], 2], x_Train)
 
+##get one database from the test and train db
+
 data <- rbind(test, train)
 
-meanData <- lapply(data[, 3:dim(data)[2]], mean)
-meanSd <- lapply(data[3:dim(data)[2]], sd)
+#create a tidy database
 
-results <- cbind(meanData, meanSd)
-names(results) <- c("Mean", "Std Deviation")
+sub_act <- data[, 1:2]
+meanData <- data[, grep("mean()", names(data))]
+stdData <- data[, grep("std()", names(data))]
 
-print(head(results))
+tidyData <- cbind(sub_act, meanData, stdData)

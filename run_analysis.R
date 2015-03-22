@@ -41,3 +41,6 @@ meanData <- data[, grep("mean()", names(data))]
 stdData <- data[, grep("std()", names(data))]
 
 tidyData <- cbind(sub_act, meanData, stdData)
+
+actividad <- group_by(tidyData, activity)
+summarize(actividad, c(grep("mean()", actividad)))
